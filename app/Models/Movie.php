@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use App\Models\Broadcast;
 
 class Movie extends Model
 {
@@ -28,8 +27,6 @@ class Movie extends Model
 
     /**
      * Get the movies attached broadcasts.
-     *
-     * @return HasMany
      */
     public function broadcasts(): HasMany
     {
