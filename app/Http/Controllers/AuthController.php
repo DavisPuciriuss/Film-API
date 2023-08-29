@@ -15,13 +15,16 @@ class AuthController extends Controller
      * /user/register POST route.
      * Creates a new user, with the passed request data.
      * Returns the created user, and a API token.
+     *
+     * @return array<string,int|string>
      */
-    public function createUser(CreateUserRequest $request): string
+    public function createUser(CreateUserRequest $request): array
     {
         if (! is_array($request->validated()) || ! isset($request->validated()['name']) || ! isset($request->validated()['email']) || ! isset($request->validated()['password'])) {
-            return response()->json([
+            return [
                 'message' => 'Invalid request data',
-            ], 400);
+                'status' => 400,
+            ];
         }
 
         $user = User::create([
@@ -30,11 +33,12 @@ class AuthController extends Controller
             'password' => Hash::make($request->validated()['password']),
         ]);
 
-        return response()->json([
+        return [
             'message' => 'User created successfully',
-            'user' => $user,
+            'status' => 201,
+            'user' => $user->toJson(),
             'token' => $user->createToken('api_token')->plainTextToken,
-        ], 201);
+        ];
     }
 
     /**
@@ -43,56 +47,65 @@ class AuthController extends Controller
      * Returns the logged in user, and a API token.
      * If the user is already logged in, the old token will be deleted.
      * If the user credentials don't match, a 401 response will be returned.
+     *
+     * @return array<string,int|string>
      */
-    public function loginUser(LoginUserRequest $request): string
+    public function loginUser(LoginUserRequest $request): array
     {
         if (! is_array($request->validated()) || ! isset($request->validated()['email']) || ! isset($request->validated()['password'])) {
-            return response()->json([
+            return [
                 'message' => 'Invalid request data',
-            ], 400);
+                'status' => 400,
+            ];
         }
 
         if (! Auth::attempt([
             'email' => $request->validated()['email'],
             'password' => Hash::make($request->validated()['password']),
         ])) {
-            return response()->json([
+            return [
                 'message' => 'Invalid credentials',
-            ], 401);
+                'status' => 401,
+            ];
         }
 
         $user = User::where('email', $request->email)->firstOrFail();
 
         $user->tokens()->delete();
 
-        return response()->json([
+        return [
             'message' => 'User logged in successfully',
-            'user' => $user,
+            'status' => 200,
+            'user' => $user->toJson(),
             'token' => $user->createToken('api_token')->plainTextToken,
-        ]);
+        ];
     }
 
     /**
      * /user/delete DELETE route.
      * Deletes the logged in user, and all of his tokens.
      * Fetches the user from the auth middleware, via the requests Bearer token.
+     *
+     * @return array<string,int|string>
      */
-    public function deleteUser(Request $request): string
+    public function deleteUser(Request $request): array
     {
         $user = auth('sanctum')->user();
 
         if ($user === null) {
-            return response()->json([
+            return [
                 'message' => 'User not found',
-            ], 404);
+                'status' => 404,
+            ];
         }
 
         $user->tokens()->delete();
 
         $user->delete();
 
-        return response()->json([
+        return [
             'message' => 'User deleted successfully',
-        ]);
+            'status' => 200,
+        ];
     }
 }

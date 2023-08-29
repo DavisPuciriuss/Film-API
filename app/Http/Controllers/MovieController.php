@@ -48,34 +48,41 @@ class MovieController extends Controller
     /**
      * /movies/create POST route.
      * Creates a new movie and returns it.
+     *
+     * @return array<string,int|string>
      */
-    public function store(MovieRequest $request): string
+    public function store(MovieRequest $request): array
     {
         if (! is_array($request->validated())) {
-            return response()->json([
+            return [
                 'message' => 'Invalid request data',
-            ], 400);
+                'status' => 400,
+            ];
         }
 
         $movie = Movie::create($request->validated());
 
-        return response()->json([
+        return [
             'message' => 'Movie created succesfully !',
+            'status' => 201,
             'movie' => $movie->toJson(),
-        ]);
+        ];
     }
 
     /**
      * /movies/delete/{id} DELETE route.
      * Finds a movie by the ID, if it exists, deletes it and returns a success message.
+     *
+     * @return array<string,int|string>
      */
-    public function destroy(string $id): string
+    public function destroy(string $id): array
     {
         $movie = Movie::findOrFail($id);
         $movie->delete();
 
-        return response()->json([
+        return [
             'message' => 'Movie deleted succesfully !',
-        ]);
+            'status' => 200,
+        ];
     }
 }
