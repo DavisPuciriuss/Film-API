@@ -2,51 +2,64 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginUserRequest;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     /**
-     * attemptLogin
-     * Attempts to login the user, on failure return a 401 response.
-     * @param  LoginUserRequest $request
-     * @return void
+     * /user/register POST route.
+     * Creates a new user, with the passed request data.
+     * Returns the created user, and a API token.
      */
-    private function attemptLogin(LoginUserRequest $request)
+    public function createUser(CreateUserRequest $request): string
     {
-        if(!Auth::attempt([
-            'email' => $request->validated()['email'],
-            'password' => Hash::make($request->validated()['password'])
-        ])) {
+        if (! is_array($request->validated()) || ! isset($request->validated()['name']) || ! isset($request->validated()['email']) || ! isset($request->validated()['password'])) {
             return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401);
+                'message' => 'Invalid request data',
+            ], 400);
         }
-    }
 
-    public function createUser(CreateUserRequest $request)
-    {
         $user = User::create([
             'name' => $request->validated()['name'],
             'email' => $request->validated()['email'],
-            'password' => Hash::make($request->validated()['password'])
+            'password' => Hash::make($request->validated()['password']),
         ]);
 
         return response()->json([
             'message' => 'User created successfully',
             'user' => $user,
-            'token' => $user->createToken('api_token')->plainTextToken
+            'token' => $user->createToken('api_token')->plainTextToken,
         ], 201);
     }
 
-    public function loginUser(LoginUserRequest $request)
+    /**
+     * /user/login POST route.
+     * Log-in a user, with the passed request data.
+     * Returns the logged in user, and a API token.
+     * If the user is already logged in, the old token will be deleted.
+     * If the user credentials don't match, a 401 response will be returned.
+     */
+    public function loginUser(LoginUserRequest $request): string
     {
-        $this->attemptLogin($request);
+        if (! is_array($request->validated()) || ! isset($request->validated()['email']) || ! isset($request->validated()['password'])) {
+            return response()->json([
+                'message' => 'Invalid request data',
+            ], 400);
+        }
+
+        if (! Auth::attempt([
+            'email' => $request->validated()['email'],
+            'password' => Hash::make($request->validated()['password']),
+        ])) {
+            return response()->json([
+                'message' => 'Invalid credentials',
+            ], 401);
+        }
 
         $user = User::where('email', $request->email)->firstOrFail();
 
@@ -55,20 +68,31 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'User logged in successfully',
             'user' => $user,
-            'token' => $user->createToken('api_token')->plainTextToken
+            'token' => $user->createToken('api_token')->plainTextToken,
         ]);
     }
 
-    public function deleteUser(Request $request)
+    /**
+     * /user/delete DELETE route.
+     * Deletes the logged in user, and all of his tokens.
+     * Fetches the user from the auth middleware, via the requests Bearer token.
+     */
+    public function deleteUser(Request $request): string
     {
         $user = auth('sanctum')->user();
+
+        if ($user === null) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
+        }
 
         $user->tokens()->delete();
 
         $user->delete();
 
         return response()->json([
-            'message' => 'User deleted successfully'
+            'message' => 'User deleted successfully',
         ]);
     }
 }

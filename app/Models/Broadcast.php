@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use App\Models\Movie;
 
 class Broadcast extends Model
 {
@@ -26,8 +25,6 @@ class Broadcast extends Model
 
     /**
      * Get the broadcasted movie.
-     *
-     * @return BelongsTo
      */
     public function movie(): BelongsTo
     {

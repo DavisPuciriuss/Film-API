@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Database\Query\JoinClause;
-use App\Models\Movie;
 use App\Http\Requests\MovieRequest;
+use App\Models\Movie;
+use Illuminate\Database\Query\JoinClause;
+use Illuminate\Http\Request;
 
 class MovieController extends Controller
 {
@@ -13,14 +13,11 @@ class MovieController extends Controller
      * /movies GET route.
      * Returns a list of movies paginated by 10, sorted by movie added datetime.
      * Optional param title to search for a movie by title.
-     *
-     * @param  Request $request
-     * @return string
      */
     public function index(Request $request): string
     {
-        if($request->has('title')) {
-            $movies = Movie::where('title', 'LIKE', '%' . $request->input('title') . '%')->orderBy('created_at', 'desc')->paginate(10);
+        if ($request->has('title')) {
+            $movies = Movie::where('title', 'LIKE', '%'.$request->input('title').'%')->orderBy('created_at', 'desc')->paginate(10);
         } else {
             $movies = Movie::orderBy('created_at', 'desc')->paginate(10);
         }
@@ -28,12 +25,9 @@ class MovieController extends Controller
         return $movies->toJson();
     }
 
-
     /**
      * /top-upcoming-movies GET route.
      * Returns a list of top upcoming movies (Rating > 7.0) paginated by 10, sorted by closest upcoming broadcast.
-     *
-     * @return string
      */
     public function topUpcoming(): string
     {
@@ -41,9 +35,9 @@ class MovieController extends Controller
             ->where('rating', '>', 7.0)
             ->join('broadcasts', function (JoinClause $join) {
                 $join->on('movies.id', '=', 'broadcasts.movie_id')
-                     ->where('broadcasts.broadcasted_at', '>=', now())
-                        ->orderBy('broadcasts.broadcasted_at', 'desc')
-                            ->take(1);
+                    ->where('broadcasts.broadcasted_at', '>=', now())
+                    ->orderBy('broadcasts.broadcasted_at', 'desc')
+                    ->take(1);
             })
             ->orderBy('broadcasts.broadcasted_at', 'desc')
             ->paginate(10);
@@ -54,12 +48,15 @@ class MovieController extends Controller
     /**
      * /movies/create POST route.
      * Creates a new movie and returns it.
-     *
-     * @param  MovieRequest $request
-     * @return string
      */
     public function store(MovieRequest $request): string
     {
+        if (! is_array($request->validated())) {
+            return response()->json([
+                'message' => 'Invalid request data',
+            ], 400);
+        }
+
         $movie = Movie::create($request->validated());
 
         return response()->json([
@@ -71,9 +68,6 @@ class MovieController extends Controller
     /**
      * /movies/delete/{id} DELETE route.
      * Finds a movie by the ID, if it exists, deletes it and returns a success message.
-     *
-     * @param  string $id
-     * @return string
      */
     public function destroy(string $id): string
     {
