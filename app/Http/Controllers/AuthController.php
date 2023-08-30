@@ -36,7 +36,7 @@ class AuthController extends Controller
         return [
             'message' => 'User created successfully',
             'status' => 201,
-            'user' => $user->toJson(),
+            'user' => $user,
             'token' => $user->createToken('api_token')->plainTextToken,
         ];
     }
@@ -61,7 +61,7 @@ class AuthController extends Controller
 
         if (! Auth::attempt([
             'email' => $request->validated()['email'],
-            'password' => Hash::make($request->validated()['password']),
+            'password' => $request->validated()['password'],
         ])) {
             return [
                 'message' => 'Invalid credentials',
@@ -76,7 +76,7 @@ class AuthController extends Controller
         return [
             'message' => 'User logged in successfully',
             'status' => 200,
-            'user' => $user->toJson(),
+            'user' => $user,
             'token' => $user->createToken('api_token')->plainTextToken,
         ];
     }

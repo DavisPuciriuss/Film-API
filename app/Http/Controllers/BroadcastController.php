@@ -23,9 +23,20 @@ class BroadcastController extends Controller
             ];
         }
 
+        $broadcasted_day = date_create_from_format('Y-m-d H:i:s', $request->validated()['broadcasted_at']);
+
+        if ($broadcasted_day) {
+            $broadcasted_day = $broadcasted_day->format('Y-m-d');
+        } else {
+            return [
+                'message' => 'Invalid broadcasted_at date format',
+                'status' => 400,
+            ];
+        }
+
         // Check if the movie already has a broadcast for this channel at this date.
         $broadcast = Broadcast::where('movie_id', $request->validated()['movie_id'])
-            ->where('broadcasted_at', $request->validated()['broadcasted_at']->format('Y-m-d').'%')
+            ->whereDate('broadcasted_at', $broadcasted_day)
             ->where('channel', $request->validated()['channel'])
             ->first();
 

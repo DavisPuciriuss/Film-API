@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MovieRequest;
 use App\Models\Movie;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 
 class MovieController extends Controller
@@ -31,15 +30,10 @@ class MovieController extends Controller
      */
     public function topUpcoming(): string
     {
-        $movies = Movie::where('released_at', '>', now())
-            ->where('rating', '>', 7.0)
-            ->join('broadcasts', function (JoinClause $join) {
-                $join->on('movies.id', '=', 'broadcasts.movie_id')
-                    ->where('broadcasts.broadcasted_at', '>=', now())
-                    ->orderBy('broadcasts.broadcasted_at', 'desc')
-                    ->take(1);
-            })
-            ->orderBy('broadcasts.broadcasted_at', 'desc')
+        $movies = Movie::upcoming()
+            ->ratingAbove(7.0)
+            ->with('broadcasts')
+            ->orderByClosestBroadcast()
             ->paginate(10);
 
         return $movies->toJson();
@@ -77,7 +71,15 @@ class MovieController extends Controller
      */
     public function destroy(string $id): array
     {
-        $movie = Movie::findOrFail($id);
+        $movie = Movie::find($id);
+
+        if (! $movie) {
+            return [
+                'message' => 'Movie not found !',
+                'status' => 404,
+            ];
+        }
+
         $movie->delete();
 
         return [
