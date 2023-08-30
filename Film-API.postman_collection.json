@@ -1,0 +1,458 @@
+{
+	"info": {
+		"_postman_id": "e53ca39e-94ce-4c37-af1e-067ddefc5fcc",
+		"name": "Film-API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29406427"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Register a new user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseText = pm.response.text();\r",
+									"\r",
+									"const parsedResponse = JSON.parse(responseText);\r",
+									"\r",
+									"const token = parsedResponse.token;\r",
+									"\r",
+									"pm.collectionVariables.set(\"$bearerToken\", token);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "",
+									"description": "User name.",
+									"type": "default"
+								},
+								{
+									"key": "email",
+									"value": "",
+									"description": "User e-mail.",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "",
+									"description": "User password.",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost/api/user/register",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log-in an existing user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseText = pm.response.text();\r",
+									"\r",
+									"const parsedResponse = JSON.parse(responseText);\r",
+									"\r",
+									"const token = parsedResponse.token;\r",
+									"\r",
+									"pm.collectionVariables.set(\"$bearerToken\", token);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "",
+									"description": "Specify the email for the registered user.",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "",
+									"description": "Specify the password.",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost/api/user/login",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete existing user",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "localhost/api/user/delete",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"user",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Movies",
+			"item": [
+				{
+					"name": "/movies",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "localhost/api/movies",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"movies"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/top-upcoming-movies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "localhost/api/top-upcoming-movies",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"top-upcoming-movies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new movie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "",
+									"description": "max 100 characters.",
+									"type": "default"
+								},
+								{
+									"key": "rating",
+									"value": "",
+									"description": "0.0 - 10.0",
+									"type": "default"
+								},
+								{
+									"key": "age_restriction",
+									"value": "",
+									"description": "None, 7+, 12+, 16+",
+									"type": "default"
+								},
+								{
+									"key": "description",
+									"value": "",
+									"description": "max 500 characters.",
+									"type": "default"
+								},
+								{
+									"key": "released_at",
+									"value": "",
+									"description": "Datetime format of: Y-m-d H:i:s",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost/api/movies/create",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"movies",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an existing movie",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "localhost/api/movies/delete/:id",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"movies",
+								"delete",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Movie ID"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Broadcast",
+			"item": [
+				{
+					"name": "Create a new broadcast",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "movie_id",
+									"value": "",
+									"description": "Existing Movie UUID",
+									"type": "default"
+								},
+								{
+									"key": "channel",
+									"value": "",
+									"description": "Channel name max: 255",
+									"type": "default"
+								},
+								{
+									"key": "broadcasted_at",
+									"value": "",
+									"description": "Datetime format of: Y-m-d H:i:s",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost/api/broadcast/create",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"broadcast",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Security",
+			"item": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{$bearerToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "$bearerToken",
+			"value": ""
+		}
+	]
+}
